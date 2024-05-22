@@ -4,6 +4,7 @@ import initialState from "./ToDoData";
 import "./App.css";
 import ToDoList from "../components/ToDoList";
 import EditToDo from "../components/EditToDoList";
+import AddTask from "../components/AddTask";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -26,6 +27,11 @@ function reducer(state, action) {
           todo.id === action.payload.id ? { ...todo, title: action.payload.title } : todo
         )
       }
+    case 'ADD_TODO': // Add a case for adding a new todo
+      return {
+        ...state,
+        todos: [...state.todos, action.payload]
+      }
     default:
       return state;
   }
@@ -35,6 +41,9 @@ function App() {
   const [state, dispatch] = useReducer(reducer, { todos: initialState});
   const [editId, setEditId] = useState(null);
   const [editedText, setEditedText] = useState(""); // State for editedText
+  const [newTaskTitle, setNewTaskTitle] = useState(""); // State for new task title
+  const [newTaskCompleted, setNewTaskCompleted] = useState(false); // State for new task completion status
+
 
   const handleToggle = (id) => {
     dispatch({ type: 'TOGGLE_TODO', payload: id})
@@ -49,9 +58,14 @@ function App() {
     setEditId(null); // Reset editId after edit
   }
 
+  const handleAddTask = (task) => {
+    dispatch({ type: 'ADD_TODO', payload: task});
+  }
+
   return (
     <div>
       <h1>To-Do List</h1>
+      <AddTask onAddTask={handleAddTask} /> {/* Render AddTask component */}
       <ToDoList
         todos={state.todos}
         onToggle={handleToggle}
